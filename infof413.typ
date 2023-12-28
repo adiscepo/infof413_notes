@@ -8,6 +8,7 @@
 
 #set page(
   margin: 2cm,
+  // margin: (top: 20mm, left: 20mm, right: 20mm, bottom: 25mm),
   header: [
     #set text(10pt, weight: 100)
     Attilio Discepoli
@@ -15,12 +16,18 @@
     #v(-7pt)
     #line(length: 100%, stroke: 0.2pt)
   ],
+  // width: 14.8cm,
+  // height: 21cm,
   number-align: right
 )
 
 #set par(
   justify: true,
 )
+
+#let end_of_proof = () => {
+  align(right, v(-20pt) + square(width: 7pt, stroke: 0.5pt))
+}
 
 #align(center, 
   text(smallcaps[Notes de cours], 1.8em, weight: 900) 
@@ -125,8 +132,7 @@ $ underbrace(1/2 times 2 times 3^(k-1), "Retourne 0") + underbrace(1/2 times 3^(
   - Retourne 0: Alors ses deux enfants retourne soit 0, avec une probabilité $ 2 times 3^(k-1) $; soit qu'un seul des deux retourne 0, avec une probabilité $ 1/2 times 2 times 3^(k-1) + 1/2 times (3/2 times 3^(k-1) + 2 times 3^(k-1)) eq 11/4 times 3 ^(k-1) $
   - Retourne 1: Alors ses deux enfants doivent retourner 1, il est nécessaire de regarder les deux enfants. $ 2 times underbrace(3/2 times 3^(k-1), "Coût de vérification d'un noeud " or) eq 3^k $
 Dans tous les cas, on remarque que le nombre attendu d'opération pour évaluer le $and$ racine ne dépasse pas $3^k$. 
-#align(right, v(-20pt) + square(width: 7pt, stroke: 0.5pt))
-
+#end_of_proof()
 == Théorie des jeux
 
 Un jeu à somme nulle pour deux joueurs est un jeu pouvant être représenté par $M$, une matrice de gain $n times m$ dont les entrées sont encodées par paires de stratégies, une pour chaque joueur. $M_(i j)$ est la quantité payée par le joueur $C$ (colone) au joueur $L$ (ligne) lorsque $L$ choisi la stratégie $i$ et $C$ la stratégie $j$.
@@ -211,6 +217,7 @@ L'inégalité de Markov nous donne la borne la plus serrée possible quand nous 
 Et de manière équivalente $ P[X >= k E[X]] <= 1/k $
 Preuve: Définissons une fonction $ f(x) = cases(1 "si" x>= a, 0 "sinon") $
 Alors $P[X >= a] = E[f(X)]$. Étant donné que $f(x) <= x/a $ pour n'importe quel $x$, on a $ E[f(X)] <= E[X/a] = E[X]/a $
+#end_of_proof()
 Malheureusement, cette borne est trop faible pour apporter des résultats utiles. Cependant, elle peut être utilisée pour trouver de meilleures bornes sur la probabilité de la queue en utilisant plus d'informations sur la distribution de la variable aléatoire.
 == Inégalité de Chebyshev
 Cette inégalité est basée sur la conaissance de la variance de la distribution.
@@ -219,14 +226,14 @@ Cette inégalité est basée sur la conaissance de la variance de la distributio
 #theorem[Soit $X$ une variable aléatoire ayant une espérance $mu_X$ et un écart-type $sigma_X$, pour n'importe quel $t in RR^+$, $ P[ |X - mu_X| >= t sigma_X] <= 1/t^2 $]
 Preuve: On observe que $ P[ |X - mu_X| >= t sigma_X] = P[(X - mu_X)^2 >= t^2 sigma^2_x] $Définissons une variable aléatoire $Y = (X - mu_X)^2$, son espérance vaut alors $E[Y] = sigma^2_X$, si l'on applique l'inégalité de Markov à cette variable aléatoire avec $a = t^2$, clairement#footnote[Je dis clairement, mais j'avais tellement pas compris la preuve (qui pourtant est super simple) que j'ai passé 1h à la refaire. Oui parfois y'a des trucs débiles sur lesquels on passe une plombe, pour la peine je vais écrire les étapes.]: 
 $ &P[Y >= t^2] &<= E[Y]/t^2\ &P[(X-mu)^2 >= t^2] &<= sigma^2/t^2\ &P[(X-mu)^2 >= sigma^2 t^2] &<= 1/t^2 \ &P[(X-mu) >= sigma t] &<= 1/t^2 $
-
+#end_of_proof()
 == Borne de Chernoff
 Borne sur la queue de la distribution bien plus précises que celles de Markov ou Chebyshev. Ces bornes sont utilisées dans le cas où les variables aléatoires ne peuvent pas être modélisées comme une somme de variables aléatoires indépendantes (par exemple des variables de Bernoulli#footnote[Résultat d'un pile ou face]).
 #definition[Soit $X_1, ..., X_n$ des *variables aléatoires indépendantes de Bernoulli* tel que $1 <= i <= n, P[X_i = 1] = p$ et $P[X_i = 0] = (1-p)$. Si l'on défini $X = sum_(i=1)^n X_i$, alors $X$ suit une distribution binomiale.]
 #definition[Des essais de *Poisson* font références à des variables aléatoires indépendantes dont les probabilités sont propres aux variables. Il s'agit d'une généralisation de Bernoulli. Soit $X_1, ..., X_n$ des variables de Bernoulli tel que pour $1 <= i <= n, P[X_i = 1] = p_i$ et $P[X_i = 0] = (1 - p_i)$]
 Nous nous concentrons sur le cas général (Poisson) mais il fonctionne bien évidemment aussi dans le cas "Bernoulli" où toutes les variables partagent la même probabilité $p$.
 On peut se poser des questions sur la déviation de l'espérance $mu$ de $X$, $mu = sum_i=1^n p_i$ telles que "Quelle est la probabilité que $X$ dépasse $(1+delta)mu$ ?". Une réponse à cette question est utile pour analyser un algorithme randomisé, cela montre que les chance que l'algorithme échoue une certaine performances sont faibles. Un autre type de question que l'on peut se poser est "Quelle valeur maximale $delta$ peut prendre de sorte que la probabilité de la queue soit plus petite qu'une valeur $epsilon$ ?"
-#theorem[Soit $X_1, ..., X_n$ une collection d'essais de Poissons indépendantes#footnote[Il s'agit donc simplement de variables aléatoires indépendantes de Bernouilli $x_i$ ayant chacunes une probabilité $p_i$] tq pour tout $1 <= i <= n, P[X_i = 1] = p_i$ où $0 < p_i < 1$. Alors, pour un $X = sum_(i=1)^n X_i, mu = E[X] = sum_i^n p_i$ et un $delta > 0$, $ P[X > (1+delta)mu] < [e^delta/((1+delta)^(1+delta))]^mu $*Remarque*: le membre de droite de l'inégalité est une fonction ne dépendant que des paramètres $delta "et" mu$ ]
+#theorem[Soit $X_1, ..., X_n$ une collection d'essais de Poissons indépendants#footnote[Il s'agit donc simplement de variables aléatoires indépendantes de Bernouilli $x_i$ ayant chacunes une probabilité $p_i$] tq pour tout $1 <= i <= n, P[X_i = 1] = p_i$ où $0 < p_i < 1$. Alors, pour un $X = sum_(i=1)^n X_i, mu = E[X] = sum_i^n p_i$ et un $delta > 0$, $ P[X > (1+delta)mu] < [e^delta/((1+delta)^(1+delta))]^mu $*Remarque*: le membre de droite de l'inégalité est une fonction ne dépendant que des paramètres $delta "et" mu$ ]
 #let genMomFct = $e^(t X)$
 L'idée derrière cette formule est d'appliquer les inégalités de Markov sur les _fonction génératrices des moments_ des variables aléatoires $X$ définies comme $M_X(t) = E[genMomFct]$.\
 Preuve:
@@ -257,4 +264,26 @@ P[genMomFct > e^(t(1+delta)mu)] &< product_i (1 + p_i (e^t - 1))/e^(t(1 + delta)
  &< e^((e^t - 1)mu)/e^(t(1 + delta)mu)\
 $
 On doit donc maintenant une valeur pour $t$ de sorte à obtenir la meilleure borne possible, pour ça on a juste à prendre, il s'agit d'un problème d'optimisation simple sans contraintes, on prend la valeur obtenue lorsque la dérivée est nulle. Cela donne $ d/(d t) (e^((e^t - 1)mu)/e^(t(1 + delta)mu))  = mu*(e^t-delta-1)*e^(mu*(e^t-1)-(delta+1)*mu*t) = 0 $ 
-La valeur obtimale est $e^t = delta + 1 => t = ln(delta + 1)$ pour $delta > 0$, on a donc notre borne.
+La valeur obtimale est $e^t = delta + 1 => t = ln(delta + 1)$ pour $delta > 0$, en remplacant $t$ dans l'inégalité, on a obtient notre borne: 
+$
+  P[X > (1+ delta)mu] &< e^((e^ln(1+delta) - 1)mu)/e^(ln(1+delta)(1+delta)mu)\
+                      &< (e^(((1+delta) - 1)mu))/((1+delta)^((1+delta)mu))\
+                      &< [e^delta/((1+delta)^((1+delta)))]^mu\
+$
+#end_of_proof()
+Nous noterons le membre de droite de l'inéquation $ F(delta, mu) := [e^delta/((1+delta)^((1+delta)))]^mu $
+Il est important de remarquer que la valeur se trouvant entre les parenthèses doit toujours e^tre strictement plus petit que 1.
+#theorem[
+ Soit $X_1, ..., X_n$ un ensemble d'essais de Poisson indepéndants où $X_i in {0, 1}$ et où pour tout $1 <= i <= n, P[X_i = 1] = p_i$ où $0 < p_i < 1$. Définissons $X = sum_i X_i$ et $mu = E[X] = sum_i p_i$. Alors pour tout$0 < delta < 1$,
+ $ P[X < (1-delta)mu] < e^(-mu delta^2/2) $
+]
+== Bornes de Chernoff simplifiées
+On peut obtenir des bornes simplifiées en jouant avec l'inégalité logarithmique $ln(1+x) >= x/(1+x/2)$ pour tout $x > 0$ et en l'appliquant à $F(delta, mu)$. En effetuant ces étapes, on obtient,
+$ F(delta, mu) <= e^(-mu delta^2/(2+delta)) $
+Il est alors nécessaire de tenir compte de la valeur de $delta$, en effet celle-ci ne peut prendre la valeur 2, ce qui nous donne une formulation simplifiée de la borne de Chernoff,
+#proposition[\
+  Si $delta > 2$, alors $ F(delta, mu) <= e^(-mu delta/2) $
+  Si $delta < 2$, alors $ F(delta, mu) <= e^(-mu delta^2/4) $
+]
+
+== Boules et boîtes
