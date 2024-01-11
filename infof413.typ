@@ -174,15 +174,25 @@ Il est possible de prouver que la définition de BPP ne change pas si l'on prend
 = Non-uniformité
 Retirer l'aléatoire dans un algorithme randomisé n'est pas toujours possible. Cela dépend de plusieurs critères et en particulier sur l'*uniformité*#footnote[Algorithmes s'exécutant de la même façon pour des entrées de tailles différentes] des algorithmes. En effet, pour rendre déterministe un algorithme randomisé, il est nécessaire d'introduire une nouvelle fonctionnalité connue sous le nom de *non-uniformité*#footnote[Similairement à la définition d'uniformité. Un Algorithme non-uniforme peut largement varié selon la taille de l'entrée], il s'agit d'un _conseil_ en taille polynomiale et ne dépendant que de la taille de l'entrée $n$.\
 == P/poly
-P/poly n'est pas forcement appliquable en pratique, en effet, la classe contient des problèmes indécidables.\
-On peut la définir de deux façons différents: une avec des conseils et l'autre avec des circuits booléens.
+$arrow.r$ P/poly n'est pas forcement appliquable en pratique, en effet, la classe contient des problèmes indécidables.\
+$arrow.r$ P/poly est déterministe ! On a retiré l'aléatoire.\
+$arrow.r$ On peut la définir de deux façons différents: une avec des conseils et l'autre avec des circuits booléens.
 === Conseils
 La classe P/poly est la classe de complexité contenant les langages qui peuvent être décidés en temps polynomial par une machine de Turing déterministe avec une fonction de conseil $a$ tel que $a(n)$ est bornée polynialement en $n$.\
 $a(n) : NN -> sum ^*$ et $|a(n)| < O(n^c)$\
 Il s'agit d'un mot de taille dépendant de la taille de l'entrée (un algorithme déterministe $A$ décide un langage $L$ avec un conseil $a$ sur une entrée $n in sum ^*$ tel que $a(|n|)$). Ce conseil aide énormément l'algorithme à résoudre le problème.
 
 === Circuits booléens
-Un ci
+$arrow.r$ On peut représenter un conseil par un circuit.\
+$arrow.r$ Un circuit booléen est une fonction booléenne avec $n$ entrées.\
+$arrow.r$ Une famille de circuits $C_1, C_2, ...$ est dite une famille de circuits de taille polynomiale pour un langage $L$ si $forall n$ le circuit $C_n$ calcule $x in L forall x in sum^n$.\
+$arrow.r$ L'ensemble des langages ayant une famille de circuits de taille $O(n^c)$ est dite $"SIZE"(n^c)$ et l'ensemble des langages ayant un circuit en taille polynomiale est donc l'union de ces tailles $union.big_(c > 0) "SIZE"(n^c)$\
+
+P/poly = $union.big_(c > 0) "SIZE"(n^c)$\
+Preuve:\ 
+    - La première direction est simple, le circuit $C_n$ peut-être représenté par une description de conseil de $a(n)$ qui est ensuite exécuté par un algorithme pour simuler le circuit booléen.\
+    - La seconde direction: On observe d'abord qu'il existe un algorithme déterministe décidant $L$ en un temps polynomial (si $L in$ P) et qu'alors, il existe une famille de circuits de taille polynomiale pour $L$. Un nombre polynomial d'étapes d'exécutions d'une Machine de Turing peuvent être modélisées par un circuit booléen.
+    - Donc, si il existe un circuit additionnant le conseil $a(n)$ - une chaîne de caractères polynomiale - on peut construire une famille de taille polynomiale de circuits om le conseil $a(n)$ est branché directement au circuit. Et étant donné que $a(n)$ a une taille polynomiale en $n$, la taille de ces circuits est aussi polynomiale en $n$.
 
 = Arbres de jeux et principe de Yao
 Vision "théorie des jeux" des algorithmes randomisés. Cela permet de visualiser des algorithmes probabilistes comme une distribution de probabilités sur des algorithmes déterministes.\
