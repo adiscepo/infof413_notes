@@ -3,9 +3,9 @@
 #import "@preview/cetz:0.1.2"
 #show: thmrules
 #set heading(numbering: "1.")
+
 #set footnote(numbering: ("i"))
 #set footnote.entry(indent: 0em, gap: 0.7em)
-
 #set page(
   margin: 2cm,
   // margin: (top: 20mm, left: 20mm, right: 20mm, bottom: 25mm),
@@ -20,6 +20,7 @@
   // height: 21cm,
   number-align: right
 )
+
 
 #set par(
   justify: true,
@@ -72,42 +73,116 @@
   target: heading.where(level: 1)
 )
 
+/* De ma compréhension du cours, il s'agit de méthodes permettant d'analyser des algorithmes aléatoires. C'est à dire des algorithmes qui font des choix randoms au cours de leurs exécutions. Analyser de tels algorithmes nous permet de dire (grossièrement): Ok, pour ce problème A on a un algo déterministe bien long pour trouver le résultat optimal, est-ce que le résultat obtenu quand on construit un résultat aléatoire est pas bien ? Et si oui selon quelle probabilité ?  */
+
+= Notions mathématiques importantes
+== Distribution de probabilités discrètes
+La distribution de probabilité discrète la plus élémentaire est sans doute celle de *Bernoulli*, que l'on peut interprété comme un lancer de pièce. Elle est définie comme,
+$ P[X = 1] = p $
+et 
+$ P[X = 0] = 1-p $
+pour un paramètre $p in [0, 1]$
+La variance d'une telle variable aléatoire $X$ est $p(1-p)$ et son espérance $p$.
+
+#definition[
+  La distribution binomiale est définie comme,
+  $ P[X = j] = binom(n, j)p^j (1-p)^(n-j) $
+]
+
 = Algorithmes de Monte-Carlo
 #v(5pt)
 #definition[Un algorithme de Monte-Carlo est un algorithme randomisé dont le *temps d'exécution* est *déterministe* mais le résultat peut être incorrect avec une certaine probabilité $p$ (généralement petite)] 
 $arrow.r$ Pas de surprise sur la durée du calcul\ $arrow.r$ Peut-être faux mais c'est très rare\ $arrow.r$ Nous donne des algos rapides avec une faible probabilité d'échec
 
 == Biais
-Un algorithme randomisé (eg: Monte-Carlo, Las-Vegas) peut être érroné - il répond `OUI` alors que la réponse aurait dut être `NON` - ce qui n'est pas le cas des algorithmes déterministes. Un algorithme de Monte-Carlo peut toujours renvoyer une réponse exacte si il a un *biais*.\
+Un algorithme randomisé peut être érroné - il répond #smallcaps("oui") alors que la réponse aurait dut être #smallcaps("non") - ce qui n'est pas le cas des algorithmes déterministes. Un algorithme de Monte-Carlo peut toujours renvoyer une réponse exacte si il a un *biais*.\
 
-Un algorithme biaisé vers le faux est toujours correct lorqu'il retourne `FAUX`.\
-Un algorithme biaisé vers le vrai est toujours correct lorqu'il retourne `VRAI`.
+Un algorithme biaisé vers le faux est toujours correct lorqu'il retourne #smallcaps("faux").\
+Un algorithme biaisé vers le vrai est toujours correct lorqu'il retourne #smallcaps("vrai").
 
-#definition[Un algorithme est _one-side error_ lorsqu'il est soit baisé vers le faux, soit biaisé vers le vrai]
-#definition[Un algorithme est _two-side error_ lorsqu'il est baisé vers le vrai et le faux]
-
-== Classes de Complexités
-À l'instar des algorithmes déterministes et des classes de complexités $P$ et $N P$, les algortihmes randomisés ont égalements leurs classes de complexités. 
-
-=== BPP
-_Bounded-Error Probabilistic polynomial time_ $arrow.r$ Le problème est résolvable en $"TIME"(P)$ avec un algorithme de Monte-Carlo non biaisé.\
-Le théorème d'Adelman énonce que _BPP_ est inclus dans _P/poly_
-
-== RP
-_Randomized Polynomial Time_ $arrow.r$ résolvable en $"TIME"(P)$ avec une probabilitée bornée par un algorithme de Monte-Carlo biaisé.
-
-== ZPP
-_Zero-Error Probabilistic Polynomial Time_ $arrow.r$ résolvable en $"TIME"(P)$ avec un algorithme de Las-Vegas.
-
-_ZPP_ $eq$ _RP_ $sect$ _coRP_
-
-== PP
-_Polynomial Probabilistic_ $arrow.r$ décidable en temps polynomial avec une probabilité d'erreur inférieure à 1/2.
-
+#definition[Un algorithme est _one-side error_ lorsqu'il est soit biaisé vers le faux, soit biaisé vers le vrai]
+#definition[Un algorithme est _two-side error_ lorsqu'il est n'est pas biaisé, et donc  qu'il répond #smallcaps("vrai") ou #smallcaps("faux") selon une probabilité $p$.]
 
 == Algorithme de Las-Vegas
 #v(5pt)
 #definition[Un algorithme de Las-Vegas est un algorithme randomisé dont l'exécution est *déterministe* mais le temps d'exécution est non-prévisible. Il s'arrête lorsqu'il trouve une réponse exacte]
+
+= Classes de Complexités
+À l'instar des algorithmes déterministes et des classes de complexités P et NP, les algortihmes randomisés ont égalements leurs classes de complexités. 
+
+== RP et coRP
+_Randomized Polynomial-time_ $arrow.r$ résolvable en $"TIME"(P)$ avec une probabilité bornée par un algorithme de Monte-Carlo biaisé.\
+Formellement, la classe RP contient les langages $L$ tq il existe un algorithme randomisé $A$ s'exécutant en $"TIME"(P)$ au pire cas de sorte que pour n'importe quelle entrée $x in sum ^*$,
+  - $x in L => A(x) "accepte avec une probabilité" >= 1/2$
+  - $x in.not L => A(x) "rejette"$
+P $subset.eq "RP" subset.eq "NP"$\
+Suivant la même logique, la classe coRP consiste aux langages $L$:
+  - $x in L => A(x) "accepte"$
+  - $x in.not L => A(x) "rejete avec une probabilité" >= 1/2$
+
+== ZPP
+_Zero-Error Probabilistic Polynomial Time_ $arrow.r$ résolvable en $"TIME"(P)$ avec un algorithme de Las-Vegas.
+#theorem[
+ZPP $eq$ RP $sect$ coRP
+]
+*Question de la liste des questions d'examens*\
+Preuve:
+1. Preuve que RP $sect$ coRP $subset.eq$ ZPP:
+  
+  Supposons qu'un langage $L$ soit dans RP et dans coRP. Alors il existe deux algorithme $A$ et $B$ tq:
+  - si $x in L "alors" A(x) "accepte avec une probabilité">= 1/2", et" B(x) "accepte toujours"$ 
+  - si $x in.not L "alors" A(x) "rejette toujours, et" B(x) "rejette avec une probabilité" >= 1/2$ 
+  On peut alors exécuter les deux algorithmes sur une entrée $x$. Si $B(x)$ accepte, on est certain que $x in L$ et de même, si $A(x)$ rejette alors on est sûr que $x in.not L$. Dans le cas où $A(x)$ accepterait et $B(x)$ rejeterais, on itère. Il n'est pas possible que $A(x)$ accepte toujours et $B(x)$ rejette toujours. On sera donc certains, après un nombre constant attendu d'itération, d'obtenir la bonne réponse.
+  #end_of_proof()
+2. Preuve que ZPP $subset.eq$ RP $sect$ coRP:
+  Supposons qu'un langage $L$ appartienne à ZPP. Nous pouvons créer deux algorithmes, un montrant que le langage $L$ se trouve dans RP, et un autre montrant qu'il appartienne à coRP.
+  - Pour le premier algorithme, supposons que l'algorithme ZP s'exécute en temps polynomial $p(n)$ où $n = |x|$. Alors on peut faire ceci:
+    1. Exécuter l'algorithme $A$ pour $2p(n)$ étapes,
+    2. Si $A$ s'est arrêté après $2p(n)$ étapes, alors la sortie est la réponse, sinon il rejete.
+  Quelle est la probabilité que $A$ s'arrête après $2p(n)$ en sachant que, selon son espérance, il s'arrête après $p(n)$ étapes. Selon l'inégalité de Markov (voir @markovineq), soit $X$ le temps d'exécution de $A$, on a $P[X > 2p(n)] <= E[X]/(2p(n)) = p(n)/(2p(n)) = 1/2$. Dopc, si $x in L$, on a une probabilité au moins $1/2$ que ça soit correct. Si $x in.not L$, alors il rejete toujours. Cela prouve que $L in$ RP.
+  - Pour le second algorithme ($L in$ coRP), on fait l'inverse; on accepte l'entrée lorsque $A$ ne s'arrête pas après $2p(n)$ étapes.
+== PP
+_Polynomial Probabilistic_ $arrow.r$ décidable en temps polynomial avec une probabilité d'erreur inférieure à 1/2.\
+Formellement, la classe PP consiste aux langages $L$ dont il existe un algorithme randomisé $A$ s'exécutant en temps polynomial au pire cas tel que pour n'importe quelle entrée $x in sum ^*$,
+- $x in L => A(x) "accepte avec une probabilité" > 1/2$
+- $x in.not L => A(x) "accepte avec une probabilité" < 1/2$
+
+#figure(
+  image("randomized_complexity_class.png", width: 40%),
+  caption: "Relations entre les classes de complexités probabilistes"
+)
+
+== BPP
+_Bounded-Error Probabilistic Polynomial-time_ $arrow.r$ Le problème est résolvable en $"TIME"(P)$ avec un algorithme de Monte-Carlo non biaisé.\
+Formellement, la classe BPP consiste aux langages $L$ tel qu'il existe un algorithme randomisé $A$ s'exécutant en temps polynomial au pire cas tel que pour n'importe quelle entrée $x in sum ^*$,
+- $x in L => A(x) "accepte avec une probabilité" >= 3/4$
+- $x in.not L => A(x) "accepte avec une probabilité" <= 1/4$
+
+BPP et PP définissent des algorithmes de Monte-Carlo non-biaisé (_two-sided error_).
+
+Il est possible de prouver que la définition de BPP ne change pas si l'on prend une probabilité d'erreur $p < 1/2$ à la place de $1/4$.
+
+// Preuve:
+// On sait qu'on a une probabilité $p$ que le retour soit faux. Donc $1-p$ qu'il soit vrai. On va amplifier la probabilité en répétant plusieurs fois l'algorithme de sorte à en sortir la réponse majoritaire. On remarque que prendre la majorité est notre meilleur pari car on est dans un cas non-biaisé !\
+// On crée un algorithme répétant $2m +1$ l'appel à $A$, la probabilité d'erreur est la probabilité d'avoir au plus $m$ réponses correctes et $m+1$ réponse érronées. 
+// La probabilité d'erreur est donc de $p < 1/2$ et la probabilité de succès est de $q=1-p$. On note que $p < 1-p$\
+// La probabilité d'erreur peut être borné comme suit:\
+// On se base d'abord sur l'espérance: $ E[X] = sum_i^n n f(x) $ avec $ f(a) = cases(1 "si" a "est un faux positif", 0 "si" a "est un vrai positif") $ et $n = 2m+1$\
+// On définit $ X_i = cases(1 "si le " i"ème appel retourne une réponse correcte", 0 "sinon") $ Il est important de noter que les variables $X_i$ sont indépendantes et que leur espérance $E[X_i] = q$. On peut ensuite calculer $X = sum^(2m+1)_(i=1)X_i = q(2m + 1) = q(2n) = mu$
+=> J'ai beau la faire, je ne comprends pas la preuve.
+
+= Non-uniformité
+Retirer l'aléatoire dans un algorithme randomisé n'est pas toujours possible. Cela dépend de plusieurs critères et en particulier sur l'*uniformité*#footnote[Algorithmes s'exécutant de la même façon pour des entrées de tailles différentes] des algorithmes. En effet, pour rendre déterministe un algorithme randomisé, il est nécessaire d'introduire une nouvelle fonctionnalité connue sous le nom de *non-uniformité*#footnote[Similairement à la définition d'uniformité. Un Algorithme non-uniforme peut largement varié selon la taille de l'entrée], il s'agit d'un _conseil_ en taille polynomiale et ne dépendant que de la taille de l'entrée $n$.\
+== P/poly
+P/poly n'est pas forcement appliquable en pratique, en effet, la classe contient des problèmes indécidables.\
+On peut la définir de deux façons différents: une avec des conseils et l'autre avec des circuits booléens.
+=== Conseils
+La classe P/poly est la classe de complexité contenant les langages qui peuvent être décidés en temps polynomial par une machine de Turing déterministe avec une fonction de conseil $a$ tel que $a(n)$ est bornée polynialement en $n$.\
+$a(n) : NN -> sum ^*$ et $|a(n)| < O(n^c)$\
+Il s'agit d'un mot de taille dépendant de la taille de l'entrée (un algorithme déterministe $A$ décide un langage $L$ avec un conseil $a$ sur une entrée $n in sum ^*$ tel que $a(|n|)$). Ce conseil aide énormément l'algorithme à résoudre le problème.
+
+=== Circuits booléens
+Un ci
 
 = Arbres de jeux et principe de Yao
 Vision "théorie des jeux" des algorithmes randomisés. Cela permet de visualiser des algorithmes probabilistes comme une distribution de probabilités sur des algorithmes déterministes.\
@@ -209,7 +284,7 @@ $arrow.r$ Chaque noeud retourne la valeur majoritaire parmis ses enfants (valeur
 = Inégalités de concentrations
 #definition[En probabilité, les *inégalités de concentration* fournissent des bornes sur la probabilité qu'une variable aléatoire dévie d'une certaine valeur (généralement l'espérance de cette variable aléatoire)]
 En d'autres termes, ces inégalités nous donnent des bornes sur les variations que peuvent prendre une variable aléatoire. Dans le cas des algorithmes randomisés celles-ci sont intéressantes pour prouver qu'un tel algorithme nous donne une réponse correcte avec une grande probabilité.
-== Inégalité de Markov
+== Inégalité de Markov <markovineq>
 Il s'agit de l'inégalité la plus simple. On l'utilisera comme base pour d'autres inégalités. Elle utilise l'espérance de la variable aléatoire. 
 #definition[Si $X$ est une variable aléatoire et $f(x)$ une fonction réelle. Alors l'*espérance* de $f(x)$ est donnée par $ E[f(X)] = sum_(x in X)f(x)P[X = x] $]
 L'inégalité de Markov nous donne la borne la plus serrée possible quand nous savons que $X$ est non-négatif et a une espérance donnée.
@@ -233,7 +308,7 @@ Borne sur la queue de la distribution bien plus précises que celles de Markov o
 #definition[Des essais de *Poisson* font références à des variables aléatoires indépendantes dont les probabilités sont propres aux variables. Il s'agit d'une généralisation de Bernoulli. Soit $X_1, ..., X_n$ des variables de Bernoulli tel que pour $1 <= i <= n, P[X_i = 1] = p_i$ et $P[X_i = 0] = (1 - p_i)$]
 Nous nous concentrons sur le cas général (Poisson) mais il fonctionne bien évidemment aussi dans le cas "Bernoulli" où toutes les variables partagent la même probabilité $p$.
 On peut se poser des questions sur la déviation de l'espérance $mu$ de $X$, $mu = sum_i=1^n p_i$ telles que "Quelle est la probabilité que $X$ dépasse $(1+delta)mu$ ?". Une réponse à cette question est utile pour analyser un algorithme randomisé, cela montre que les chance que l'algorithme échoue une certaine performances sont faibles. Un autre type de question que l'on peut se poser est "Quelle valeur maximale $delta$ peut prendre de sorte que la probabilité de la queue soit plus petite qu'une valeur $epsilon$ ?"
-#theorem[Soit $X_1, ..., X_n$ une collection d'essais de Poissons indépendants#footnote[Il s'agit donc simplement de variables aléatoires indépendantes de Bernouilli $x_i$ ayant chacunes une probabilité $p_i$] tq pour tout $1 <= i <= n, P[X_i = 1] = p_i$ où $0 < p_i < 1$. Alors, pour un $X = sum_(i=1)^n X_i, mu = E[X] = sum_i^n p_i$ et un $delta > 0$, $ P[X > (1+delta)mu] < [e^delta/((1+delta)^(1+delta))]^mu $*Remarque*: le membre de droite de l'inégalité est une fonction ne dépendant que des paramètres $delta "et" mu$ ]
+#theorem[Soit $X_1, ..., X_n$ une collection d'essais de Poissons indépendants#footnote[Il s'agit donc simplement de variables aléatoires indépendantes de Bernouilli $x_i$ ayant chacunes une probabilité $p_i$] tq pour tout $1 <= i <= n, P[X_i = 1] = p_i$ où $0 < p_i < 1$. Alors, pour un $X = sum_(i=1)^n X_i, mu = E[X] = sum_i^n p_i$ et un $delta > 0$, $ P[X > (1+delta)mu] < [e^delta/((1+delta)^(1+delta))]^mu $*Remarque*: le membre de droite de l'inégalité est une fonction ne dépendant que des paramètres $delta "et" mu$ ] <thmChernoff>
 #let genMomFct = $e^(t X)$
 L'idée derrière cette formule est d'appliquer les inégalités de Markov sur les _fonction génératrices des moments_ des variables aléatoires $X$ définies comme $M_X(t) = E[genMomFct]$.\
 Preuve:
@@ -272,11 +347,12 @@ $
 $
 #end_of_proof()
 Nous noterons le membre de droite de l'inéquation $ F(delta, mu) := [e^delta/((1+delta)^((1+delta)))]^mu $
-Il est important de remarquer que la valeur se trouvant entre les parenthèses doit toujours e^tre strictement plus petit que 1.
+Il est important de remarquer que la valeur se trouvant entre les parenthèses doit toujours être strictement plus petit que 1.
 #theorem[
  Soit $X_1, ..., X_n$ un ensemble d'essais de Poisson indepéndants où $X_i in {0, 1}$ et où pour tout $1 <= i <= n, P[X_i = 1] = p_i$ où $0 < p_i < 1$. Définissons $X = sum_i X_i$ et $mu = E[X] = sum_i p_i$. Alors pour tout$0 < delta < 1$,
  $ P[X < (1-delta)mu] < e^(-mu delta^2/2) $
-]
+] <thmChernoffsmalldelta>
+Le @thmChernoffsmalldelta permet de borner supérieurement la probabilité que la somme est un facteur $(1-delta)$ *plus petit* que l'espérance.\ En effet, le @thmChernoff permettait de borner uniquement la probabilité que la somme des variables indépendantes de Bernoulli ne dépassent pas un facteur $(1 -delta)$ *plus grand* que son espérance.
 == Bornes de Chernoff simplifiées
 On peut obtenir des bornes simplifiées en jouant avec l'inégalité logarithmique $ln(1+x) >= x/(1+x/2)$ pour tout $x > 0$ et en l'appliquant à $F(delta, mu)$. En effetuant ces étapes, on obtient,
 $ F(delta, mu) <= e^(-mu delta^2/(2+delta)) $
